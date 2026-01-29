@@ -9,8 +9,8 @@ const securityMiddleware = async (req: Request, res: Response, next: NextFunctio
     try {
         const role: RateLimitRole = req.user?.role || "guest";
 
-    let limit: number = 2;
-    let message: string = "Request limit exceeded. Please try again later.";
+    let limit: number;
+    let message: string;
 
         switch (role) {
             case "admin":
@@ -61,17 +61,20 @@ const securityMiddleware = async (req: Request, res: Response, next: NextFunctio
             return res.status(403).json({ error: 'Forbidden' ,message: "Request blocked by security rules." });
         }
         if (decision.isDenied() && decision.reason.isRateLimit()) {
-            return res.status(429).json({ error: 'Too many requests.', message });
+            return res.status(429).json({ error: 'Too many requests.', message: "Too many requests."});
         }
 
         next();
 
 
     }catch (error) {
-        console.error("Security middleware error:", error);
-        return res.status(500).json({ message: "Internal Server Error" });
-    }
+        console.error("Arcjet middleware error:", error);
+        res.status(500).json({
+            error: "Internal Server Error",
+            message: "Something went wrong with the security middleware.",
+        });
 
-}
+    }
+};
 
 export default securityMiddleware;
