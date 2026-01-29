@@ -9,8 +9,8 @@ const securityMiddleware = async (req: Request, res: Response, next: NextFunctio
     try {
         const role: RateLimitRole = req.user?.role || "guest";
 
-        let limit: number;
-        let message: string;
+    let limit: number = 2;
+    let message: string = "Request limit exceeded. Please try again later.";
 
         switch (role) {
             case "admin":
@@ -28,6 +28,10 @@ const securityMiddleware = async (req: Request, res: Response, next: NextFunctio
             case "guest":
                 limit=2;
                 message="Guest request limit exceeded (2 per minute). Sign in to increase your limit.";
+                break;
+            default:
+                limit=2;
+                message="Request limit exceeded. Please try again later.";
                 break;
         }
 
@@ -57,7 +61,7 @@ const securityMiddleware = async (req: Request, res: Response, next: NextFunctio
             return res.status(403).json({ error: 'Forbidden' ,message: "Request blocked by security rules." });
         }
         if (decision.isDenied() && decision.reason.isRateLimit()) {
-            return res.status(403).json({ error: 'Forbidden' ,message: "Rate limit exceeded." });
+            return res.status(403).json({ error: 'Forbidden' ,message });
         }
 
         next();
