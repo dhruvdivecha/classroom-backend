@@ -1,4 +1,4 @@
-export * from './app'
-export * from './auth'
+export * from './app.js'
+export * from './auth.js'
 
 
