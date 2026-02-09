@@ -3,10 +3,12 @@ AgentAPI.config();
 
 import express, { Request, Response } from 'express';
 import subjectsRouter from './routes/subjects.js';
+import usersRouter from './routes/users.js';
 import cors from 'cors';
 import securityMiddleware from './middleware/security.js';
 import { toNodeHandler } from 'better-auth/node'
 import { auth } from './lib/auth.js';
+import classRouter from './routes/classes.js';
 
 
 const app = express();
@@ -25,6 +27,8 @@ app.use(express.json());
 app.use(securityMiddleware);
 
 app.use('/api/subjects', subjectsRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/classes',classRouter); 
 
 app.get('/', (_req: Request, res: Response) => {
   res.json({ message: 'Classroom backend is running' });
