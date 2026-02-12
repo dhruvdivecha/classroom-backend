@@ -1,6 +1,6 @@
 import express from 'express';
 import { db } from '../db/db.js';
-import { classes, subjects, user } from '../db/schema/index.js';
+import { classes, departments, subjects, user } from '../db/schema/index.js';
 import { ilike, or, and, eq } from 'drizzle-orm/sql/expressions/conditions';
 import { sql } from 'drizzle-orm/sql/sql';
 import { desc, getTableColumns } from 'drizzle-orm';
@@ -113,5 +113,32 @@ router.get('/', async (_req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
+router.get('/:id', async (req, res) => {
+    const classID = Number(req.params.id);
+
+    if(!Number.isFinite(classID)){
+        return res.status(400).json({ message: 'Invalid class ID' });
+    }
+
+    const [classDetails] = await db
+        .select({
+            ...getTableColumns(classes),
+            subject: { ...getTableColumns(subjects) },
+            teacher: { ...getTableColumns(user) },
+            department: { ...getTableColumns(departments) }
+        })
+        .from(classes)
+        .leftJoin(subjects, eq(classes.subjectId, subjects.id))
+        .leftJoin(user, eq(classes.teacherId, user.id))
+        .leftJoin(departments, eq(subjects.departmentId, departments.id))
+        .where(eq(classes.id, classID));
+
+    if (!classDetails) {
+        return res.status(404).json({ message: 'Class not found' });
+    }
+
+    res.status(200).json({ data: classDetails });
+})
 
 export default router;
