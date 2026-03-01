@@ -13,6 +13,7 @@ if (!process.env.BETTER_AUTH_SECRET) {
 const BETTER_AUTH_SECRET = process.env.BETTER_AUTH_SECRET;
 
 export const auth = betterAuth({
+    baseURL: process.env.BETTER_AUTH_BASE_URL || "http://localhost:8000",
     secret: BETTER_AUTH_SECRET,
     trustedOrigins: [process.env.FRONTEND_URL || "http://localhost:5173"],
     database: drizzleAdapter(db, {
