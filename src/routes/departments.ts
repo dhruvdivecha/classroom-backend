@@ -58,7 +58,7 @@ router.get('/', async (req: AuthRequest, res) => {
 });
 
 router.get('/:id', async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(req.params.id as string, 10);
   if (!Number.isFinite(id)) return res.status(400).json({ message: 'Invalid ID' });
   const [row] = await db.select().from(departments).where(eq(departments.id, id));
   if (!row) return res.status(404).json({ message: 'Department not found' });
@@ -86,7 +86,7 @@ router.post('/', requireRole('admin'), async (req: AuthRequest, res) => {
 });
 
 router.put('/:id', requireRole('admin'), async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(req.params.id as string, 10);
   if (!Number.isFinite(id)) return res.status(400).json({ message: 'Invalid ID' });
   const [existing] = await db.select().from(departments).where(eq(departments.id, id));
   if (!existing) return res.status(404).json({ message: 'Department not found' });
@@ -111,7 +111,7 @@ router.put('/:id', requireRole('admin'), async (req: AuthRequest, res) => {
 });
 
 router.delete('/:id', requireRole('admin'), async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(req.params.id as string, 10);
   if (!Number.isFinite(id)) return res.status(400).json({ message: 'Invalid ID' });
   const [existing] = await db.select().from(departments).where(eq(departments.id, id));
   if (!existing) return res.status(404).json({ message: 'Department not found' });

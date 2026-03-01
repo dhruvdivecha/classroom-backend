@@ -88,7 +88,7 @@ router.get('/', async (req: AuthRequest, res) => {
 });
 
 router.get('/:id', async (req: AuthRequest, res) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     if (!id) return res.status(400).json({ message: 'Invalid ID' });
     const [row] = await db.select(getTableColumns(user)).from(user).where(eq(user.id, id));
     if (!row) return res.status(404).json({ message: 'User not found' });
@@ -117,7 +117,7 @@ router.post('/', async (req: AuthRequest, res) => {
 });
 
 router.put('/:id', async (req: AuthRequest, res) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     if (!id) return res.status(400).json({ message: 'Invalid ID' });
     const [existing] = await db.select().from(user).where(eq(user.id, id));
     if (!existing) return res.status(404).json({ message: 'User not found' });
@@ -142,7 +142,7 @@ router.put('/:id', async (req: AuthRequest, res) => {
 
 // PATCH /:id/verify — approve or deny a user's email verification
 router.patch('/:id/verify', async (req: AuthRequest, res) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { verified } = req.body;
     if (!id) return res.status(400).json({ message: 'Invalid ID' });
     if (typeof verified !== 'boolean') return res.status(400).json({ message: '"verified" boolean is required' });
@@ -158,7 +158,7 @@ router.patch('/:id/verify', async (req: AuthRequest, res) => {
 });
 
 router.delete('/:id', async (req: AuthRequest, res) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     if (!id) return res.status(400).json({ message: 'Invalid ID' });
     const [existing] = await db.select().from(user).where(eq(user.id, id));
     if (!existing) return res.status(404).json({ message: 'User not found' });
