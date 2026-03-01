@@ -22,6 +22,12 @@ export const classStatusEnum = pgEnum('class_status', [
     'archived',
 ]);
 
+export const joinRequestStatusEnum = pgEnum('join_request_status', [
+    'pending',
+    'approved',
+    'rejected',
+]);
+
 export const departments = pgTable('departments', {
     id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
     code: varchar('code', { length: 50 }).notNull().unique(),
@@ -87,6 +93,30 @@ export const enrollments = pgTable(
     })
 );
 
+export const joinRequests = pgTable(
+    'join_requests',
+    {
+        id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+        studentId: text('student_id')
+            .notNull()
+            .references(() => user.id, { onDelete: 'cascade' }),
+        classId: integer('class_id')
+            .notNull()
+            .references(() => classes.id, { onDelete: 'cascade' }),
+        status: joinRequestStatusEnum('status').notNull().default('pending'),
+        message: text('message'),
+        ...timestamps
+    },
+    (table) => ({
+        studentIdIdx: index('join_requests_student_id_idx').on(table.studentId),
+        classIdIdx: index('join_requests_class_id_idx').on(table.classId),
+        studentClassUnique: uniqueIndex('join_requests_student_class_unique').on(
+            table.studentId,
+            table.classId
+        ),
+    })
+);
+
 export const departmentsRelations = relations(departments, ({ many }) => ({ subjects: many(subjects) }));
 
 export const subjectsRelations = relations(subjects, ({ one, many }) => ({
@@ -107,6 +137,7 @@ export const classesRelations = relations(classes, ({ one, many }) => ({
         references: [user.id],
     }),
     enrollments: many(enrollments),
+    joinRequests: many(joinRequests),
 }));
 
 export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
@@ -116,6 +147,17 @@ export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
     }),
     class: one(classes, {
         fields: [enrollments.classId],
+        references: [classes.id],
+    }),
+}));
+
+export const joinRequestsRelations = relations(joinRequests, ({ one }) => ({
+    student: one(user, {
+        fields: [joinRequests.studentId],
+        references: [user.id],
+    }),
+    class: one(classes, {
+        fields: [joinRequests.classId],
         references: [classes.id],
     }),
 }));
@@ -131,3 +173,6 @@ export type NewClass = typeof classes.$inferInsert;
 
 export type Enrollment = typeof enrollments.$inferSelect;
 export type NewEnrollment = typeof enrollments.$inferInsert;
+
+export type JoinRequest = typeof joinRequests.$inferSelect;
+export type NewJoinRequest = typeof joinRequests.$inferInsert;
