@@ -19,8 +19,16 @@ const app = express();
 const PORT = 8000;
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', ],
+    origin: (origin, callback) => {
+        const allowed = process.env.FRONTEND_URL || 'http://localhost:5173';
+        // Allow the main frontend URL, Vercel preview deployments, and requests with no origin (e.g. server-to-server)
+        if (!origin || origin === allowed || /\.vercel\.app$/.test(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true
 }))
 
