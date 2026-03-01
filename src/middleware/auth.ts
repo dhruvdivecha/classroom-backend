@@ -25,9 +25,14 @@ async function resolveSession(req: AuthRequest): Promise<boolean> {
       });
 
       if (sessionResult?.user) {
+        let role = ((sessionResult.user as any).role || 'student') as 'admin' | 'teacher' | 'student';
+        // Unapproved teachers are treated as students until verified
+        if (role === 'teacher' && !sessionResult.user.emailVerified) {
+          role = 'student';
+        }
         req.user = {
           id: sessionResult.user.id,
-          role: ((sessionResult.user as any).role || 'student') as 'admin' | 'teacher' | 'student',
+          role,
           email: sessionResult.user.email,
           name: sessionResult.user.name || null,
         };

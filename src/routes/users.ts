@@ -8,11 +8,12 @@ import { authMiddleware, requireRole, AuthRequest } from '../middleware/auth.js'
 
 const router = express.Router();
 
-// All user routes require authentication and admin role (teachers can't access)
+// All user routes require authentication
 router.use(authMiddleware);
-router.use(requireRole('admin'));
 
-router.get('/', async (req: AuthRequest, res) => {
+// GET routes: admin and teacher can list/view users
+// All other routes: admin only
+router.get('/', requireRole('admin', 'teacher'), async (req: AuthRequest, res) => {
     try {
         const { search, role, emailVerified, page = '1', limit = '10' } = req.query;
 
@@ -87,7 +88,7 @@ router.get('/', async (req: AuthRequest, res) => {
     }
 });
 
-router.get('/:id', async (req: AuthRequest, res) => {
+router.get('/:id', requireRole('admin', 'teacher'), async (req: AuthRequest, res) => {
     const id = req.params.id as string;
     if (!id) return res.status(400).json({ message: 'Invalid ID' });
     const [row] = await db.select(getTableColumns(user)).from(user).where(eq(user.id, id));
@@ -95,7 +96,7 @@ router.get('/:id', async (req: AuthRequest, res) => {
     res.json({ data: row });
 });
 
-router.post('/', async (req: AuthRequest, res) => {
+router.post('/', requireRole('admin'), async (req: AuthRequest, res) => {
     try {
         const { name, email, role } = req.body;
         if (!email?.trim()) return res.status(400).json({ message: 'Email is required' });
@@ -116,7 +117,7 @@ router.post('/', async (req: AuthRequest, res) => {
     }
 });
 
-router.put('/:id', async (req: AuthRequest, res) => {
+router.put('/:id', requireRole('admin'), async (req: AuthRequest, res) => {
     const id = req.params.id as string;
     if (!id) return res.status(400).json({ message: 'Invalid ID' });
     const [existing] = await db.select().from(user).where(eq(user.id, id));
@@ -141,7 +142,7 @@ router.put('/:id', async (req: AuthRequest, res) => {
 });
 
 // PATCH /:id/verify — approve or deny a user's email verification
-router.patch('/:id/verify', async (req: AuthRequest, res) => {
+router.patch('/:id/verify', requireRole('admin'), async (req: AuthRequest, res) => {
     const id = req.params.id as string;
     const { verified } = req.body;
     if (!id) return res.status(400).json({ message: 'Invalid ID' });
@@ -157,7 +158,7 @@ router.patch('/:id/verify', async (req: AuthRequest, res) => {
     }
 });
 
-router.delete('/:id', async (req: AuthRequest, res) => {
+router.delete('/:id', requireRole('admin'), async (req: AuthRequest, res) => {
     const id = req.params.id as string;
     if (!id) return res.status(400).json({ message: 'Invalid ID' });
     const [existing] = await db.select().from(user).where(eq(user.id, id));

@@ -4,9 +4,7 @@ The REST API server for **Zeusda's School**, a full-stack classroom management a
 
 <!-- Add screenshots below -->
 <p align="center">
-  <img src="" alt="App Screenshot 1" width="45%" />
-  &nbsp;&nbsp;
-  <img src="" alt="App Screenshot 2" width="45%" />
+  <em>See the <a href="../classroom-frontend">frontend README</a> for screenshots.</em>
 </p>
 
 ---
@@ -31,6 +29,7 @@ The REST API server for **Zeusda's School**, a full-stack classroom management a
 - Email/password sign-up and sign-in with session-based cookies
 - Three roles: **Admin**, **Teacher**, **Student**
 - Role-based middleware protecting all API routes
+- **Unapproved teachers** (email not verified) are treated as students until an admin verifies them — role is automatically upgraded on next request
 - CSRF protection via Better Auth trusted origins
 
 ### Department Management
@@ -94,16 +93,17 @@ The REST API server for **Zeusda's School**, a full-stack classroom management a
 | `POST`   | `/api/classes`                       | Admin/Teacher | Create class                    |
 | `GET`    | `/api/classes/:id`                   | Required | Get class with enrollments           |
 | `PUT`    | `/api/classes/:id`                   | Admin/Teacher | Update class                    |
-| `DELETE` | `/api/classes/:id`                   | Admin    | Delete class                         |
-| `POST`   | `/api/classes/:id/enroll`            | Admin/Teacher | Enroll student                  |
-| `DELETE` | `/api/classes/:id/enroll/:studentId` | Admin/Teacher | Remove student                  |
-| `GET`    | `/api/users`                         | Admin    | List users                           |
+| `DELETE` | `/api/classes/:id`                   | Admin/Teacher | Delete class                    |
+| `GET`    | `/api/classes/:id/enrollments`       | Required | List enrolled students              |
+| `POST`   | `/api/classes/:id/enrollments`       | Admin/Teacher | Enroll student                  |
+| `DELETE` | `/api/classes/:id/enrollments/:studentId` | Admin/Teacher | Remove student             |
+| `GET`    | `/api/users`                         | Admin/Teacher | List users                      |
 | `POST`   | `/api/users`                         | Admin    | Create user                          |
-| `GET`    | `/api/users/:id`                     | Admin    | Get user                             |
+| `GET`    | `/api/users/:id`                     | Admin/Teacher | Get user                        |
 | `PUT`    | `/api/users/:id`                     | Admin    | Update user                          |
 | `PATCH`  | `/api/users/:id/verify`              | Admin    | Toggle email verification            |
 | `DELETE` | `/api/users/:id`                     | Admin    | Delete user                          |
-| `GET`    | `/api/join-requests`                 | Admin/Teacher | List join requests              |
+| `GET`    | `/api/join-requests`                 | Required | List join requests (filtered by role) |
 | `POST`   | `/api/join-requests`                 | Student  | Create join request                  |
 | `PUT`    | `/api/join-requests/:id/approve`     | Admin/Teacher | Approve request                 |
 | `PUT`    | `/api/join-requests/:id/reject`      | Admin/Teacher | Reject request                  |
