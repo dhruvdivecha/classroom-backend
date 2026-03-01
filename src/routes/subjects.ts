@@ -80,7 +80,7 @@ router.get('/', async (req: AuthRequest, res) => {
 });
 
 router.get('/:id', async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(req.params.id as string, 10);
   if (!Number.isFinite(id)) return res.status(400).json({ message: 'Invalid ID' });
   const [row] = await db
     .select({
@@ -119,7 +119,7 @@ router.post('/', requireRole('admin', 'teacher'), async (req: AuthRequest, res) 
 });
 
 router.put('/:id', requireRole('admin', 'teacher'), async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(req.params.id as string, 10);
   if (!Number.isFinite(id)) return res.status(400).json({ message: 'Invalid ID' });
   const [existing] = await db.select().from(subjects).where(eq(subjects.id, id));
   if (!existing) return res.status(404).json({ message: 'Subject not found' });
@@ -145,7 +145,7 @@ router.put('/:id', requireRole('admin', 'teacher'), async (req: AuthRequest, res
 });
 
 router.delete('/:id', requireRole('admin', 'teacher'), async (req: AuthRequest, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(req.params.id as string, 10);
   if (!Number.isFinite(id)) return res.status(400).json({ message: 'Invalid ID' });
   const [existing] = await db.select().from(subjects).where(eq(subjects.id, id));
   if (!existing) return res.status(404).json({ message: 'Subject not found' });

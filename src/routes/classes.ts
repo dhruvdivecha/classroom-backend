@@ -235,7 +235,7 @@ router.post('/:id/enrollments', requireRole('admin', 'teacher'), async (req: Aut
 
 router.delete('/:id/enrollments/:studentId', requireRole('admin', 'teacher'), async (req: AuthRequest, res) => {
     const classId = Number(req.params.id);
-    const { studentId } = req.params;
+    const studentId = req.params.studentId as string;
     if (!Number.isFinite(classId) || !studentId) return res.status(400).json({ message: 'Invalid params' });
     const result = await db.delete(enrollments).where(and(eq(enrollments.classId, classId), eq(enrollments.studentId, studentId))).returning({ id: enrollments.id });
     if (result.length === 0) return res.status(404).json({ message: 'Enrollment not found' });
