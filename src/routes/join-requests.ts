@@ -44,12 +44,19 @@ router.post('/', requireRole('student'), async (req: AuthRequest, res) => {
         and(
           eq(joinRequests.studentId, studentId),
           eq(joinRequests.classId, Number(classId)),
-          eq(joinRequests.status, 'pending')
         )
       );
 
     if (existingRequest) {
-      return res.status(400).json({ message: 'Join request already pending' });
+      if (existingRequest.status === 'pending') {
+        return res.status(400).json({ message: 'Join request already pending' });
+      }
+      if (existingRequest.status === 'rejected') {
+        return res.status(403).json({ message: 'You have been rejected from entering this class' });
+      }
+      if (existingRequest.status === 'approved') {
+        return res.status(400).json({ message: 'You are already approved for this class' });
+      }
     }
 
     // Create join request
