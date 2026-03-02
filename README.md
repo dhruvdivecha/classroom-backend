@@ -4,7 +4,7 @@ The REST API server for **Zeusda's School**, a full-stack classroom management a
 
 <!-- Add screenshots below -->
 <p align="center">
-  <em>See the <a href="../classroom-frontend">frontend README</a> for screenshots.</em>
+  <em>See the <a href="https://github.com/dhruvdivecha/Classroom-Frontend">frontend README</a> for screenshots.</em>
 </p>
 
 ---
