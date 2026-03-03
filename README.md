@@ -19,7 +19,7 @@ The REST API server for **Zeusda's School**, a full-stack classroom management a
 | ORM            | **Drizzle ORM**                                               |
 | Authentication | **Better Auth** (email + password, session cookies)           |
 | Security       | **Arcjet** (bot detection, shield, per-role rate limiting)    |
-| Deployment     | **Railway**                                                   |
+| Deployment     | **Vercel**                                                    |
 
 ---
 
@@ -61,7 +61,7 @@ The REST API server for **Zeusda's School**, a full-stack classroom management a
 ### Security
 - Arcjet Shield (SQL injection, XSS protection) — DRY_RUN in dev, LIVE in production
 - Arcjet Bot Detection — blocks automated requests in production
-- Per-role sliding window rate limiting (admin: 200/min, teacher/student: 120/min, guest: 30/min)
+- Per-role sliding window rate limiting (admin: 100/min, teacher/student: 60/min, guest: 15/min)
 - CORS restricted to frontend origin + Vercel preview deployments
 
 ---
@@ -198,19 +198,19 @@ npx tsx scripts/promote-admin.ts admin@example.com
 
 ---
 
-## Production Deployment (Railway)
+## Production Deployment (Vercel)
 
 1. Push to your GitHub repo
-2. Connect the repo to [Railway](https://railway.app)
-3. Set environment variables in Railway dashboard:
+2. Connect the repo to [Vercel](https://vercel.com)
+3. Set environment variables in Vercel dashboard:
    - `DATABASE_URL`
    - `BETTER_AUTH_SECRET`
-   - `BETTER_AUTH_BASE_URL` — your Railway public URL (e.g. `https://your-app.up.railway.app`)
+   - `BETTER_AUTH_BASE_URL` — your Vercel deployment URL (e.g. `https://your-backend.vercel.app`)
    - `FRONTEND_URL` — your Vercel frontend URL (e.g. `https://your-app.vercel.app`)
    - `ARCJET_KEY`
    - `NODE_ENV=production`
 
-4. Railway will run `npm run build` then `npm start` automatically.
+4. Vercel will detect the project and deploy it automatically.
 
 ---
 
